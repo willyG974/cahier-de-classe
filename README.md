@@ -1,2 +1,581 @@
-# cahier-de-classe
+[index.html](https://github.com/user-attachments/files/27016766/index.html)
+# cahier-de-classe<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Cahier de classe">
+<title>Cahier de classe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FAF9F7;
+  --surface: #FFFFFF;
+  --surface2: #F3F1EE;
+  --border: rgba(0,0,0,0.09);
+  --border2: rgba(0,0,0,0.15);
+  --text: #1A1814;
+  --text2: #6B6760;
+  --text3: #A8A49E;
+  --green: #1D9E75; --green-bg: #E1F5EE; --green-txt: #085041;
+  --red: #D85A30; --red-bg: #FAECE7; --red-txt: #712B13;
+  --amber: #BA7517; --amber-bg: #FAEEDA; --amber-txt: #412402;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-txt: #26215C;
+  --pink: #993556; --pink-bg: #FBEAF0; --pink-txt: #4B1528;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-txt: #042C53;
+  --teal-bg: #EAF3DE; --teal-txt: #27500A;
+  --moon: #D4537E;
+  --radius: 14px;
+  --radius-sm: 9px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text); }
+
+/* Layout */
+.app { display: flex; flex-direction: column; height: 100%; max-width: 430px; margin: 0 auto; }
+.header { padding: calc(var(--safe-top) + 16px) 20px 14px; background: var(--surface); border-bottom: 0.5px solid var(--border); flex-shrink: 0; }
+.header-row { display: flex; align-items: center; justify-content: space-between; }
+.app-brand { display: flex; align-items: baseline; gap: 8px; }
+.app-name { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--text); letter-spacing: -0.3px; }
+.date-pill { font-size: 11px; color: var(--text2); background: var(--surface2); padding: 3px 9px; border-radius: 20px; border: 0.5px solid var(--border); }
+.save-indicator { font-size: 11px; color: var(--green); opacity: 0; transition: opacity 0.4s; }
+.save-indicator.show { opacity: 1; }
+
+/* Tabs */
+.tabs { display: flex; background: var(--surface); border-bottom: 0.5px solid var(--border); flex-shrink: 0; }
+.tab { flex: 1; padding: 11px 4px; text-align: center; font-size: 13px; font-weight: 400; color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; }
+.tab.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 500; }
+
+/* Scrollable content */
+.content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; padding-bottom: calc(var(--safe-bottom) + 24px); }
+
+/* Classe selector */
+.classe-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.classe-bar select { flex: 1; font-size: 14px; font-family: 'DM Sans', sans-serif; padding: 9px 12px; border-radius: var(--radius-sm); border: 0.5px solid var(--border2); background: var(--surface); color: var(--text); appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%236B6760' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+.manage-btn { padding: 9px 13px; font-size: 12px; font-family: 'DM Sans', sans-serif; border: 0.5px solid var(--border2); border-radius: var(--radius-sm); background: var(--surface2); color: var(--text2); cursor: pointer; white-space: nowrap; }
+
+/* Stats */
+.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
+.stat-card { background: var(--surface2); border-radius: var(--radius-sm); padding: 11px 12px; }
+.stat-num { font-size: 26px; font-weight: 500; line-height: 1; }
+.stat-lbl { font-size: 11px; color: var(--text2); margin-top: 3px; }
+
+/* Toolbar */
+.toolbar { display: flex; gap: 8px; margin-bottom: 12px; }
+.tool-btn { flex: 1; padding: 9px 8px; font-size: 12px; font-family: 'DM Sans', sans-serif; border: 0.5px solid var(--border2); border-radius: var(--radius-sm); background: var(--surface2); color: var(--text); cursor: pointer; }
+.tool-btn.primary { background: var(--blue-bg); border-color: var(--blue); color: var(--blue-txt); }
+
+/* Import box */
+.import-box { background: var(--surface2); border-radius: var(--radius); padding: 14px; margin-bottom: 14px; display: none; }
+.import-box.open { display: block; }
+.import-title { font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+.import-hint { font-size: 11px; color: var(--text2); margin-bottom: 10px; line-height: 1.6; }
+.import-hint code { font-family: monospace; background: var(--surface); padding: 1px 5px; border-radius: 4px; font-size: 11px; }
+textarea.import-area { width: 100%; font-size: 12px; font-family: monospace; padding: 9px; border-radius: var(--radius-sm); border: 0.5px solid var(--border2); background: var(--surface); color: var(--text); resize: vertical; min-height: 75px; margin-bottom: 9px; }
+.import-actions { display: flex; gap: 7px; flex-wrap: wrap; }
+.file-label { flex: 1; padding: 8px 10px; font-size: 12px; font-family: 'DM Sans', sans-serif; border: 0.5px dashed var(--border2); border-radius: var(--radius-sm); background: var(--surface); color: var(--text2); cursor: pointer; text-align: center; }
+#file-upload { display: none; }
+.btn-go { padding: 8px 14px; font-size: 12px; font-family: 'DM Sans', sans-serif; background: var(--green-bg); color: var(--green-txt); border: 0.5px solid var(--green); border-radius: var(--radius-sm); cursor: pointer; }
+.btn-cls { padding: 8px 12px; font-size: 12px; font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text2); border: 0.5px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; }
+.import-fb { font-size: 12px; margin-top: 8px; padding: 7px 10px; border-radius: var(--radius-sm); display: none; }
+.import-fb.ok { background: var(--green-bg); color: var(--green-txt); display: block; }
+.import-fb.err { background: var(--red-bg); color: var(--red-txt); display: block; }
+
+/* Add form */
+.add-form { background: var(--surface2); border-radius: var(--radius); padding: 13px; margin-bottom: 12px; display: none; }
+.add-form.open { display: block; }
+.form-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.form-row input { flex: 1; font-size: 14px; font-family: 'DM Sans', sans-serif; padding: 9px 12px; border-radius: var(--radius-sm); border: 0.5px solid var(--border2); background: var(--surface); color: var(--text); }
+.form-actions { display: flex; gap: 8px; }
+.btn-ok { padding: 9px 16px; font-size: 13px; font-family: 'DM Sans', sans-serif; background: var(--green-bg); color: var(--green-txt); border: 0.5px solid var(--green); border-radius: var(--radius-sm); cursor: pointer; }
+.btn-no { padding: 9px 14px; font-size: 13px; font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text2); border: 0.5px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; }
+
+/* Eleve cards */
+.eleve-list { display: flex; flex-direction: column; gap: 8px; }
+.eleve-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; transition: box-shadow 0.15s; }
+.eleve-top { display: flex; align-items: center; gap: 10px; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; font-family: 'DM Serif Display', serif; font-size: 13px; }
+.av-p { background: var(--green-bg); color: var(--green-txt); }
+.av-a { background: var(--red-bg); color: var(--red-txt); }
+.av-r { background: var(--amber-bg); color: var(--amber-txt); }
+.av-i { background: var(--purple-bg); color: var(--purple-txt); }
+.av-n { background: var(--surface2); color: var(--text2); }
+.eleve-info { flex: 1; min-width: 0; }
+.eleve-nom { font-size: 14px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 5px; }
+.moon-ic { display: inline-flex; align-items: center; flex-shrink: 0; }
+.moon-ic svg { width: 12px; height: 12px; }
+.badges-row { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px; min-height: 18px; }
+.badge { font-size: 10px; padding: 2px 7px; border-radius: 20px; white-space: nowrap; }
+.b-a { background: var(--red-bg); color: var(--red-txt); }
+.b-r { background: var(--amber-bg); color: var(--amber-txt); }
+.b-i { background: var(--purple-bg); color: var(--purple-txt); }
+.b-mot { background: var(--blue-bg); color: var(--blue-txt); }
+.b-certif { background: var(--teal-bg); color: var(--teal-txt); }
+.b-dur { background: var(--surface2); color: var(--text2); }
+.b-ten { background: var(--pink-bg); color: var(--pink-txt); }
+
+/* Statut buttons */
+.statut-btn { display: flex; flex-wrap: wrap; gap: 4px; flex-shrink: 0; justify-content: flex-end; max-width: 118px; }
+.btn-s { width: 30px; height: 30px; border-radius: 50%; border: 0.5px solid var(--border2); background: var(--surface2); font-size: 11px; font-family: 'DM Sans', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.12s; color: var(--text2); font-weight: 500; }
+.btn-s svg { width: 13px; height: 13px; }
+.btn-s.on-p { background: var(--green-bg); border-color: var(--green); color: var(--green-txt); }
+.btn-s.on-a { background: var(--red-bg); border-color: var(--red); color: var(--red-txt); }
+.btn-s.on-r { background: var(--amber-bg); border-color: var(--amber); color: var(--amber-txt); }
+.btn-s.on-i { background: var(--purple-bg); border-color: var(--purple); color: var(--purple-txt); }
+.btn-s.on-t { background: var(--pink-bg); border-color: var(--pink); color: var(--pink-txt); }
+.btn-s.on-ind { background: #FFF0F6; border-color: var(--moon); }
+.btn-s.on-ind svg path { stroke: var(--moon); }
+
+/* Inapte panel */
+.sub-panel { margin-top: 10px; padding-top: 10px; border-top: 0.5px solid var(--border); display: none; }
+.sub-panel.open { display: block; }
+.panel-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.panel-lbl { font-size: 11px; color: var(--text2); min-width: 60px; }
+.justif-btns { display: flex; gap: 5px; flex-wrap: wrap; }
+.jbtn { padding: 5px 11px; font-size: 11px; font-family: 'DM Sans', sans-serif; border-radius: 20px; border: 0.5px solid var(--border); background: var(--surface2); color: var(--text2); cursor: pointer; transition: all 0.1s; }
+.jbtn.sel-mot { background: var(--blue-bg); border-color: var(--blue); color: var(--blue-txt); font-weight: 500; }
+.jbtn.sel-certif { background: var(--teal-bg); border-color: #639922; color: var(--teal-txt); font-weight: 500; }
+.dur-in { width: 52px; font-size: 12px; font-family: 'DM Sans', sans-serif; padding: 5px 7px; border-radius: var(--radius-sm); border: 0.5px solid var(--border2); text-align: center; background: var(--surface); color: var(--text); }
+.dur-u { font-size: 11px; color: var(--text2); }
+
+/* Delete eleve */
+.del-row { margin-top: 8px; padding-top: 8px; border-top: 0.5px solid var(--border); display: flex; justify-content: flex-end; }
+.del-btn { font-size: 11px; color: var(--red-txt); background: var(--red-bg); border: 0.5px solid var(--red); border-radius: 20px; padding: 3px 10px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+
+/* Classes manager */
+.section-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 10px; }
+.classe-item { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.classe-item-name { flex: 1; font-size: 14px; font-weight: 500; }
+.classe-count { font-size: 12px; color: var(--text2); }
+.classe-del { width: 28px; height: 28px; border-radius: 50%; border: 0.5px solid var(--border); background: var(--surface2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text2); font-family: 'DM Sans', sans-serif; }
+.add-classe-row { display: flex; gap: 8px; margin-top: 6px; }
+.add-classe-row input { flex: 1; font-size: 14px; font-family: 'DM Sans', sans-serif; padding: 9px 12px; border-radius: var(--radius-sm); border: 0.5px solid var(--border2); background: var(--surface); color: var(--text); }
+
+/* Notes */
+.notes-ctrl { display: flex; gap: 8px; margin-bottom: 14px; }
+.notes-ctrl input { flex: 1; font-size: 14px; font-family: 'DM Sans', sans-serif; padding: 9px 12px; border-radius: var(--radius-sm); border: 0.5px solid var(--border2); background: var(--surface); color: var(--text); }
+.add-list-btn { padding: 9px 14px; font-size: 13px; font-family: 'DM Sans', sans-serif; background: var(--blue-bg); color: var(--blue-txt); border: 0.5px solid var(--blue); border-radius: var(--radius-sm); cursor: pointer; white-space: nowrap; }
+.note-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 10px; }
+.note-head { padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+.note-head-left { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; }
+.note-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.note-cnt { font-size: 11px; padding: 2px 7px; border-radius: 20px; background: var(--surface2); color: var(--text2); }
+.note-body { padding: 12px 14px; border-top: 0.5px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+.note-item { display: flex; align-items: flex-start; gap: 10px; }
+.chk { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--border2); background: var(--surface); cursor: pointer; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: white; transition: all 0.12s; }
+.chk.done { background: var(--green); border-color: var(--green); }
+.note-txt { font-size: 13px; color: var(--text); line-height: 1.5; flex: 1; outline: none; }
+.note-txt.struck { text-decoration: line-through; color: var(--text3); }
+.item-del { width: 22px; height: 22px; border-radius: 50%; border: none; background: transparent; cursor: pointer; font-size: 12px; color: var(--text3); display: flex; align-items: center; justify-content: center; font-family: 'DM Sans', sans-serif; }
+.note-add-row { display: flex; gap: 6px; margin-top: 2px; }
+.note-add-row input { flex: 1; font-size: 13px; font-family: 'DM Sans', sans-serif; padding: 8px 10px; border-radius: var(--radius-sm); border: 0.5px solid var(--border2); background: var(--surface2); color: var(--text); }
+.note-add-btn { padding: 8px 13px; font-size: 14px; font-family: 'DM Sans', sans-serif; border: 0.5px solid var(--border); border-radius: var(--radius-sm); background: var(--surface2); cursor: pointer; color: var(--text2); }
+.note-del-btn { width: 28px; height: 28px; border-radius: 50%; border: none; background: transparent; cursor: pointer; font-size: 14px; color: var(--text3); display: flex; align-items: center; justify-content: center; font-family: 'DM Sans', sans-serif; }
+.empty { text-align: center; padding: 32px 20px; color: var(--text3); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-row">
+      <div class="app-brand">
+        <span class="app-name">Cahier de classe</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="save-indicator" id="save-ind">Sauvegardé</span>
+        <span class="date-pill" id="today-date"></span>
+      </div>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('appel')">Appel</div>
+    <div class="tab" onclick="switchTab('classes')">Classes</div>
+    <div class="tab" onclick="switchTab('notes')">Mes listes</div>
+  </div>
+
+  <!-- APPEL -->
+  <div id="tab-appel" class="content" style="display:block;">
+    <div class="classe-bar">
+      <select id="classe-sel" onchange="setClasse(this.value)"></select>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-num" id="s-p" style="color:var(--green)">0</div><div class="stat-lbl">Présents</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-a" style="color:var(--red)">0</div><div class="stat-lbl">Absents</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-i" style="color:var(--purple)">0</div><div class="stat-lbl">Inaptes</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-t" style="color:var(--pink)">0</div><div class="stat-lbl">Oubli tenue</div></div>
+    </div>
+    <div class="toolbar">
+      <button class="tool-btn primary" onclick="toggleImport()">+ Importer liste</button>
+      <button class="tool-btn" onclick="openAddEleve()">+ Ajouter élève</button>
+      <button class="tool-btn" id="del-mode-btn" onclick="toggleDelMode()" style="color:var(--red-txt);border-color:var(--red);background:var(--red-bg);">- Supprimer</button>
+    </div>
+    <div class="import-box" id="import-box">
+      <div class="import-title">Importer des élèves</div>
+      <div class="import-hint">Une ligne par élève : <code>Prénom Nom</code><br>ou fichier CSV : <code>prénom,nom</code></div>
+      <textarea class="import-area" id="import-text" placeholder="Marie Dupont&#10;Lucas Martin&#10;ou : Marie,Dupont"></textarea>
+      <div class="import-actions">
+        <label class="file-label" for="file-upload">Choisir un fichier CSV</label>
+        <input type="file" id="file-upload" accept=".csv,.txt" onchange="loadFile(this)">
+        <button class="btn-go" onclick="doImport()">Importer</button>
+        <button class="btn-cls" onclick="toggleImport()">Fermer</button>
+      </div>
+      <div class="import-fb" id="import-fb"></div>
+    </div>
+    <div class="add-form" id="add-form">
+      <div class="form-row">
+        <input type="text" id="np" placeholder="Prénom">
+        <input type="text" id="nn" placeholder="Nom">
+      </div>
+      <div class="form-actions">
+        <button class="btn-ok" onclick="confirmAdd()">Ajouter</button>
+        <button class="btn-no" onclick="cancelAdd()">Annuler</button>
+      </div>
+    </div>
+    <div class="eleve-list" id="eleve-list"></div>
+  </div>
+
+  <!-- CLASSES MANAGER -->
+  <div id="tab-classes" class="content" style="display:none;">
+    <div class="section-title">Gérer les classes</div>
+    <div id="classes-list"></div>
+    <div class="add-classe-row">
+      <input type="text" id="new-classe-name" placeholder="Nom de la classe (ex: 3ème B)">
+      <button class="btn-ok" onclick="addClasse()">Créer</button>
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div id="tab-notes" class="content" style="display:none;">
+    <div class="notes-ctrl">
+      <input type="text" id="new-list-name" placeholder="Nom de la liste...">
+      <button class="add-list-btn" onclick="addList()">+ Créer</button>
+    </div>
+    <div id="lists-container"></div>
+  </div>
+</div>
+
+<script>
+const COLORS=['#1D9E75','#185FA5','#D85A30','#BA7517','#534AB7','#D4537E','#639922'];
+const MOON_SVG=`<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.5 9.5a6 6 0 01-8-8 6 6 0 108 8z" stroke="#D4537E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const MOON_BTN=`<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.5 9.5a6 6 0 01-8-8 6 6 0 108 8z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+// ── State ──────────────────────────────────────────────
+let state = {
+  classes: {
+    '6ème A': [
+      {id:1,prenom:'Aïcha',nom:'Benali',statut:'p',inapte:{duree:'',justif:''},tenue:false,indispo:false},
+      {id:2,prenom:'Lucas',nom:'Dupont',statut:'p',inapte:{duree:'',justif:''},tenue:false,indispo:false},
+      {id:3,prenom:'Manon',nom:'Girard',statut:'n',inapte:{duree:'',justif:''},tenue:true,indispo:false},
+      {id:4,prenom:'Inès',nom:'Moreau',statut:'i',inapte:{duree:'3',justif:'certif'},tenue:false,indispo:true},
+      {id:5,prenom:'Léa',nom:'Simon',statut:'p',inapte:{duree:'',justif:''},tenue:false,indispo:true},
+      {id:6,prenom:'Nathan',nom:'Petit',statut:'a',inapte:{duree:'',justif:''},tenue:false,indispo:false},
+    ],
+    '5ème B': [
+      {id:7,prenom:'Camille',nom:'Bernard',statut:'n',inapte:{duree:'',justif:''},tenue:false,indispo:false},
+      {id:8,prenom:'Julien',nom:'Rousseau',statut:'i',inapte:{duree:'1',justif:'mot'},tenue:false,indispo:false},
+    ],
+    '4ème C': [
+      {id:9,prenom:'Mathis',nom:'Leroy',statut:'n',inapte:{duree:'',justif:''},tenue:false,indispo:false},
+      {id:10,prenom:'Sara',nom:'Fontaine',statut:'n',inapte:{duree:'',justif:''},tenue:false,indispo:false},
+    ]
+  },
+  currentClasse: '6ème A',
+  lists: [
+    {id:1,title:'Devoirs à rendre',color:0,open:true,items:[
+      {id:1,text:'Corriger les copies de dictée',done:false},
+      {id:2,text:'Préparer le cours chapitre 4',done:true},
+    ]},
+  ],
+  nextId: 20,
+  nextListId: 3,
+  nextItemId: 10,
+};
+
+// ── Persistence ────────────────────────────────────────
+function save(){
+  try {
+    localStorage.setItem('cahier_v1', JSON.stringify(state));
+    const ind = document.getElementById('save-ind');
+    ind.classList.add('show');
+    setTimeout(()=>ind.classList.remove('show'), 1800);
+  } catch(e){}
+}
+function load(){
+  try {
+    const s = localStorage.getItem('cahier_v1');
+    if(s){ state = JSON.parse(s); }
+  } catch(e){}
+}
+
+// ── Utils ──────────────────────────────────────────────
+function ini(p,n){ return (p[0]||'?').toUpperCase()+(n[0]||'?').toUpperCase(); }
+function avCls(s){ return s==='p'?'av-p':s==='a'?'av-a':s==='r'?'av-r':s==='i'?'av-i':'av-n'; }
+
+// ── Init ───────────────────────────────────────────────
+function setToday(){
+  document.getElementById('today-date').textContent =
+    new Date().toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'});
+}
+function switchTab(t){
+  ['appel','classes','notes'].forEach(name=>{
+    document.getElementById('tab-'+name).style.display = name===t?'block':'none';
+  });
+  document.querySelectorAll('.tab').forEach((el,i)=>{
+    el.classList.toggle('active',['appel','classes','notes'][i]===t);
+  });
+  if(t==='classes') renderClasses();
+  if(t==='notes') renderLists();
+}
+
+// ── Classe selector ────────────────────────────────────
+function buildClasseSel(){
+  const sel = document.getElementById('classe-sel');
+  sel.innerHTML = '';
+  Object.keys(state.classes).forEach(k=>{
+    const o = document.createElement('option');
+    o.value=k; o.textContent=k;
+    if(k===state.currentClasse) o.selected=true;
+    sel.appendChild(o);
+  });
+}
+function setClasse(c){ state.currentClasse=c; save(); renderEleves(); }
+
+// ── Appel ──────────────────────────────────────────────
+let delMode = false;
+function toggleDelMode(){
+  delMode = !delMode;
+  const btn = document.getElementById('del-mode-btn');
+  btn.textContent = delMode ? '✓ Terminer' : '- Supprimer';
+  btn.style.background = delMode ? '#A32D2D' : 'var(--red-bg)';
+  btn.style.color = delMode ? 'white' : 'var(--red-txt)';
+  renderEleves();
+}
+function renderEleves(){
+  buildClasseSel();
+  const eleves = state.classes[state.currentClasse]||[];
+  let p=0,a=0,ina=0,ten=0;
+  eleves.forEach(e=>{
+    if(e.statut==='p') p++;
+    else if(e.statut==='a') a++;
+    else if(e.statut==='i') ina++;
+    if(e.tenue) ten++;
+  });
+  document.getElementById('s-p').textContent=p;
+  document.getElementById('s-a').textContent=a;
+  document.getElementById('s-i').textContent=ina;
+  document.getElementById('s-t').textContent=ten;
+
+  const list=document.getElementById('eleve-list');
+  list.innerHTML='';
+  if(!eleves.length){
+    list.innerHTML='<div class="empty">Aucun élève dans cette classe.<br>Ajoutez-en via le bouton ci-dessus.</div>';
+    return;
+  }
+  eleves.forEach(e=>{
+    let badges='';
+    if(e.statut==='a') badges+=`<span class="badge b-a">Absent</span>`;
+    if(e.statut==='r') badges+=`<span class="badge b-r">Retard</span>`;
+    if(e.statut==='i'){
+      badges+=`<span class="badge b-i">Inapte</span>`;
+      if(e.inapte.justif==='mot') badges+=`<span class="badge b-mot">Mot des parents</span>`;
+      if(e.inapte.justif==='certif') badges+=`<span class="badge b-certif">Certif. médical</span>`;
+      if(e.inapte.duree) badges+=`<span class="badge b-dur">${parseInt(e.inapte.duree)} sem.</span>`;
+    }
+    if(e.tenue) badges+=`<span class="badge b-ten">Oubli tenue</span>`;
+    if(!badges) badges=`<span style="font-size:11px;color:var(--text3)">Présent</span>`;
+
+    const moonIcon = e.indispo ? `<span class="moon-ic" title="Indisposée">${MOON_SVG}</span>` : '';
+
+    const card=document.createElement('div');
+    card.className='eleve-card';
+    card.innerHTML=`
+      <div class="eleve-top">
+        <div class="avatar ${avCls(e.statut)}">${ini(e.prenom,e.nom)}</div>
+        <div class="eleve-info">
+          <div class="eleve-nom">${e.prenom} ${e.nom} ${moonIcon}</div>
+          <div class="badges-row">${badges}</div>
+        </div>
+        ${delMode ? `
+        <button onclick="deleteEleve(${e.id})" style="flex-shrink:0;padding:7px 13px;font-size:12px;font-family:'DM Sans',sans-serif;background:var(--red-bg);color:var(--red-txt);border:0.5px solid var(--red);border-radius:20px;cursor:pointer;">Supprimer</button>
+        ` : `
+        <div class="statut-btn">
+          <button class="btn-s ${e.statut==='p'?'on-p':''}" onclick="setStatut(${e.id},'p')" title="Présent">✓</button>
+          <button class="btn-s ${e.statut==='a'?'on-a':''}" onclick="setStatut(${e.id},'a')" title="Absent">✗</button>
+          <button class="btn-s ${e.statut==='r'?'on-r':''}" onclick="setStatut(${e.id},'r')" title="Retard">~</button>
+          <button class="btn-s ${e.statut==='i'?'on-i':''}" onclick="setStatut(${e.id},'i')" title="Inapte">I</button>
+          <button class="btn-s ${e.tenue?'on-t':''}" onclick="toggleTenue(${e.id})" title="Oubli tenue" style="font-size:10px">T</button>
+          <button class="btn-s ${e.indispo?'on-ind':''}" onclick="toggleIndispo(${e.id})" title="Indisposée">${MOON_BTN}</button>
+        </div>
+        `}
+      </div>
+      <div class="sub-panel ${e.statut==='i'?'open':''}" id="ip-${e.id}">
+        <div class="panel-row">
+          <span class="panel-lbl">Justificatif</span>
+          <div class="justif-btns">
+            <button class="jbtn ${e.inapte.justif==='mot'?'sel-mot':''}" onclick="setJustif(${e.id},'mot')">Mot des parents</button>
+            <button class="jbtn ${e.inapte.justif==='certif'?'sel-certif':''}" onclick="setJustif(${e.id},'certif')">Certif. médical</button>
+          </div>
+        </div>
+        <div class="panel-row">
+          <span class="panel-lbl">Durée</span>
+          <input class="dur-in" type="number" min="1" max="52" value="${e.inapte.duree||''}" placeholder="—" onchange="setDuree(${e.id},this.value)">
+          <span class="dur-u">semaine(s)</span>
+        </div>
+        <div class="del-row"><button class="del-btn" onclick="deleteEleve(${e.id})">Supprimer l'élève</button></div>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function getEleve(id){ return (state.classes[state.currentClasse]||[]).find(x=>x.id===id); }
+function setStatut(id,s){ const e=getEleve(id); if(!e)return; e.statut=e.statut===s?'n':s; if(s!=='i'&&e.statut!=='i'){} save(); renderEleves(); }
+function toggleTenue(id){ const e=getEleve(id); if(!e)return; e.tenue=!e.tenue; save(); renderEleves(); }
+function toggleIndispo(id){ const e=getEleve(id); if(!e)return; e.indispo=!e.indispo; save(); renderEleves(); }
+function setJustif(id,j){ const e=getEleve(id); if(!e)return; e.inapte.justif=e.inapte.justif===j?'':j; save(); renderEleves(); }
+function setDuree(id,v){ const e=getEleve(id); if(!e)return; e.inapte.duree=v; save(); }
+function deleteEleve(id){
+  if(!confirm('Supprimer cet élève ?')) return;
+  state.classes[state.currentClasse]=state.classes[state.currentClasse].filter(x=>x.id!==id);
+  save(); renderEleves();
+}
+
+// Add eleve
+function openAddEleve(){ document.getElementById('add-form').classList.add('open'); document.getElementById('np').focus(); }
+function cancelAdd(){ document.getElementById('add-form').classList.remove('open'); document.getElementById('np').value=''; document.getElementById('nn').value=''; }
+function confirmAdd(){
+  const p=document.getElementById('np').value.trim();
+  const n=document.getElementById('nn').value.trim();
+  if(!p||!n) return;
+  state.classes[state.currentClasse].push({id:state.nextId++,prenom:p,nom:n,statut:'n',inapte:{duree:'',justif:''},tenue:false,indispo:false});
+  save(); cancelAdd(); renderEleves();
+}
+
+// Import
+function toggleImport(){ document.getElementById('import-box').classList.toggle('open'); document.getElementById('import-fb').className='import-fb'; }
+function loadFile(input){
+  const f=input.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{document.getElementById('import-text').value=ev.target.result;};
+  r.readAsText(f,'UTF-8');
+}
+function doImport(){
+  const raw=document.getElementById('import-text').value.trim();
+  const fb=document.getElementById('import-fb');
+  if(!raw){fb.className='import-fb err';fb.textContent='Aucune donnée.';return;}
+  const lines=raw.split('\n').map(l=>l.trim()).filter(l=>l);
+  let added=0, errs=[];
+  lines.forEach((line,idx)=>{
+    let prenom='',nom='';
+    if(line.includes(',')){const p=line.split(',').map(s=>s.trim());prenom=p[0];nom=p[1]||'';}
+    else{const p=line.split(/\s+/);prenom=p[0]||'';nom=p.slice(1).join(' ')||'?';}
+    if(prenom){state.classes[state.currentClasse].push({id:state.nextId++,prenom,nom,statut:'n',inapte:{duree:'',justif:''},tenue:false,indispo:false});added++;}
+    else errs.push(idx+1);
+  });
+  save(); renderEleves();
+  fb.className=added>0?'import-fb ok':'import-fb err';
+  fb.textContent=added>0?`${added} élève(s) ajouté(s).`+(errs.length?` Lignes ignorées: ${errs.join(', ')}.`:''):'Aucun élève importé.';
+  document.getElementById('import-text').value='';
+}
+
+// ── Classes manager ────────────────────────────────────
+function renderClasses(){
+  const container=document.getElementById('classes-list');
+  container.innerHTML='';
+  Object.keys(state.classes).forEach(k=>{
+    const count=state.classes[k].length;
+    const div=document.createElement('div');
+    div.className='classe-item';
+    div.innerHTML=`
+      <div class="classe-item-name">${k}</div>
+      <div class="classe-count">${count} élève${count>1?'s':''}</div>
+      <button class="classe-del" onclick="deleteClasse('${k.replace(/'/g,"\\'")}')">✕</button>
+    `;
+    container.appendChild(div);
+  });
+}
+function addClasse(){
+  const inp=document.getElementById('new-classe-name');
+  const name=inp.value.trim();
+  if(!name) return;
+  if(state.classes[name]){alert('Cette classe existe déjà.');return;}
+  state.classes[name]=[];
+  state.currentClasse=name;
+  inp.value=''; save(); renderClasses(); buildClasseSel();
+}
+function deleteClasse(name){
+  if(Object.keys(state.classes).length<=1){alert('Impossible de supprimer la dernière classe.');return;}
+  if(!confirm(`Supprimer la classe "${name}" et ses ${state.classes[name].length} élève(s) ?`)) return;
+  delete state.classes[name];
+  if(state.currentClasse===name) state.currentClasse=Object.keys(state.classes)[0];
+  save(); renderClasses(); buildClasseSel(); renderEleves();
+}
+
+// ── Listes de notes ────────────────────────────────────
+function renderLists(){
+  const c=document.getElementById('lists-container');
+  c.innerHTML='';
+  if(!state.lists.length){c.innerHTML='<div class="empty">Aucune liste. Créez-en une !</div>';return;}
+  state.lists.forEach(lst=>{
+    const ci=COLORS[lst.color%COLORS.length];
+    const done=lst.items.filter(i=>i.done).length;
+    const div=document.createElement('div');
+    div.className='note-card';
+    div.innerHTML=`
+      <div class="note-head" onclick="toggleList(${lst.id})">
+        <div class="note-head-left">
+          <span class="note-dot" style="background:${ci}"></span>
+          ${lst.title}
+          <span class="note-cnt">${done}/${lst.items.length}</span>
+        </div>
+        <button class="note-del-btn" onclick="event.stopPropagation();deleteList(${lst.id})">✕</button>
+      </div>
+      ${lst.open?`<div class="note-body">
+        ${lst.items.map(item=>`
+          <div class="note-item">
+            <div class="chk ${item.done?'done':''}" onclick="toggleItem(${lst.id},${item.id})">${item.done?'✓':''}</div>
+            <div class="note-txt ${item.done?'struck':''}" contenteditable="true" onblur="updateItem(${lst.id},${item.id},this)">${item.text}</div>
+            <button class="item-del" onclick="deleteItem(${lst.id},${item.id})">✕</button>
+          </div>`).join('')}
+        <div class="note-add-row">
+          <input type="text" id="ii-${lst.id}" placeholder="Ajouter un élément..." onkeydown="if(event.key==='Enter')addItem(${lst.id})">
+          <button class="note-add-btn" onclick="addItem(${lst.id})">+</button>
+        </div>
+      </div>`:''}
+    `;
+    c.appendChild(div);
+  });
+}
+function toggleList(id){ const l=state.lists.find(x=>x.id===id); if(l){l.open=!l.open;save();renderLists();} }
+function toggleItem(lid,iid){ const l=state.lists.find(x=>x.id===lid); const i=l&&l.items.find(x=>x.id===iid); if(i){i.done=!i.done;save();renderLists();} }
+function updateItem(lid,iid,el){ const l=state.lists.find(x=>x.id===lid); const i=l&&l.items.find(x=>x.id===iid); if(i){i.text=el.textContent.trim();save();} }
+function deleteItem(lid,iid){ const l=state.lists.find(x=>x.id===lid); if(l){l.items=l.items.filter(x=>x.id!==iid);save();renderLists();} }
+function addItem(lid){
+  const inp=document.getElementById('ii-'+lid);
+  if(!inp||!inp.value.trim()) return;
+  const l=state.lists.find(x=>x.id===lid);
+  if(l){l.items.push({id:state.nextItemId++,text:inp.value.trim(),done:false});inp.value='';save();renderLists();setTimeout(()=>{const ni=document.getElementById('ii-'+lid);if(ni)ni.focus();},50);}
+}
+function addList(){
+  const inp=document.getElementById('new-list-name');
+  if(!inp.value.trim()){inp.focus();return;}
+  state.lists.push({id:state.nextListId++,title:inp.value.trim(),color:state.lists.length,open:true,items:[]});
+  inp.value='';save();renderLists();
+}
+function deleteList(id){ if(confirm('Supprimer cette liste ?')){state.lists=state.lists.filter(x=>x.id!==id);save();renderLists();} }
+
+// ── Boot ───────────────────────────────────────────────
+load();
+setToday();
+buildClasseSel();
+renderEleves();
+</script>
+</body>
+</html>
+
 appel et gestion de classes EPS
